@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f7fb">
+  <title>業務報修｜LINE 表單原型</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;color:#192b43;background:#f4f7fb;font-synthesis:none}*{box-sizing:border-box}body{margin:0;padding:20px 14px 36px}.wrap{max-width:680px;margin:auto}.brand{display:flex;align-items:center;gap:12px;margin:4px 4px 18px}.mark{width:42px;height:42px;border-radius:14px;background:#176b58;color:white;display:grid;place-items:center;font-size:20px}.brand strong{font-size:16px}.brand small{display:block;color:#73849a;margin-top:2px}.card{background:#fff;border:1px solid #e1e9f2;border-radius:18px;padding:22px;box-shadow:0 8px 28px #1d38500b}.eyebrow{font-size:12px;color:#527498;font-weight:700;letter-spacing:.08em}.card h1{font-size:23px;margin:6px 0 7px}.intro{font-size:14px;color:#63758b;line-height:1.65;margin:0 0 20px}.line-status{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;background:#eef8f4;color:#25624f;font-size:14px;margin-bottom:20px}.dot{width:9px;height:9px;border-radius:50%;background:#24aa76;flex:none}.section{font-size:15px;font-weight:750;margin:22px 0 12px;padding-bottom:9px;border-bottom:1px solid #edf1f5}.field{margin:14px 0}.field label{display:flex;gap:5px;font-size:13px;font-weight:650;margin-bottom:7px}.required{color:#c33}.optional{font-size:11px;color:#8291a3;font-weight:500}.hint{font-size:12px;line-height:1.55;color:#7b8a9c;margin:6px 0 0}input,textarea,select{font:inherit;width:100%;border:1px solid #ccd8e5;border-radius:10px;background:#fff;padding:12px 13px;color:#1e3047;outline:none}input:focus,textarea:focus,select:focus{border-color:#3976a7;box-shadow:0 0 0 3px #3976a71a}textarea{min-height:150px;resize:vertical;line-height:1.6}input[readonly]{background:#f5f8fb;color:#5f7084}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.actions{margin-top:22px}.submit{width:100%;border:0;border-radius:11px;padding:14px;background:#176b58;color:white;font-size:16px;font-weight:750;cursor:pointer}.submit:disabled{opacity:.55;cursor:not-allowed}.fineprint{text-align:center;font-size:11px;color:#8896a6;line-height:1.55;margin:14px 8px}.toast{display:none;margin-top:14px;padding:12px;border-radius:10px;background:#fff5e4;color:#77500f;font-size:13px;line-height:1.55}.toast.show{display:block}.reqnote{background:#fff8ed;border:1px solid #f1dfbf;padding:12px;border-radius:11px;font-size:13px;line-height:1.55;color:#755221;margin-top:16px}.footer{text-align:center;color:#93a0ae;font-size:11px;margin:14px}
+    @media(max-width:480px){body{padding:13px 10px 28px}.card{padding:18px 16px;border-radius:16px}.card h1{font-size:21px}.grid{grid-template-columns:1fr;gap:0}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="brand"><div class="mark">報</div><div><strong>派工管理系統</strong><small>業務專屬報修入口</small></div></header>
+    <section class="card">
+      <div class="eyebrow">SERVICE REQUEST</div>
+      <h1>新增業務報修</h1>
+      <p class="intro">請貼上客戶提供的完整訊息，並確認客戶聯絡資料。帶 <span class="required">*</span> 的欄位為必填。</p>
+      <div class="line-status" id="lineStatus"><span class="dot"></span><span id="lineText">正在確認 LINE 身分…</span></div>
+      <form id="repairForm">
+        <div class="section">客戶提供的報修內容</div>
+        <div class="field"><label for="message">客戶訊息 <span class="required">*</span></label><textarea id="message" name="message" required placeholder="直接貼上客戶傳來的完整內容，例如：&#10;客戶：王先生&#10;電話：0912-345-678&#10;地址：台北市○○區……&#10;故障狀況：冷氣不冷，室內機有異音……"></textarea><p class="hint">貼上後會嘗試帶入姓名、電話、地址；請核對欄位，完整原文也會附在報修資料中。</p></div>
+        <div class="section">客戶聯絡資料</div>
+        <div class="grid">
+          <div class="field"><label for="customerName">客戶姓名 <span class="required">*</span></label><input id="customerName" name="customerName" required autocomplete="name" placeholder="請輸入客戶姓名"></div>
+          <div class="field"><label for="phone">客戶電話 <span class="required">*</span></label><input id="phone" name="phone" type="tel" required autocomplete="tel" placeholder="例如：0912-345-678"></div>
+        </div>
+        <div class="field"><label for="address">服務地址 <span class="required">*</span></label><input id="address" name="address" required autocomplete="street-address" placeholder="請填寫完整地址"></div>
+        <div class="section">案件資料</div>
+        <div class="grid">
+          <div class="field"><label for="date">填報日期</label><input id="date" name="date" type="date"></div>
+          <div class="field"><label for="dealer">經銷商 <span class="optional">選填</span></label><input id="dealer" name="dealer" placeholder="沒有經銷商可留白"></div>
+        </div>
+        <div class="reqnote"><strong>送出前請確認：</strong>報修資料必須包含客戶姓名、電話及完整地址。未填齊時系統不會受理。</div>
+        <div class="actions"><button class="submit" type="submit">送出報修</button><div class="toast" id="toast" role="status"></div></div>
+      </form>
+    </section>
+    <p class="fineprint">業務身分由 LINE 登入辨識，不需另外填寫業務姓名。請確認客戶同意提供聯絡資料以安排維修。</p>
+    <div class="footer">LINE 表單畫面原型</div>
+  </main>
+  <script>
+    // 上線前由管理者填入 LIFF ID 與後端 API 網址。不要將 Channel secret 寫在前端。
+    const APP_CONFIG = { LIFF_ID: "YOUR_LIFF_ID", API_URL: "YOUR_SECURE_API_ENDPOINT" };
+    const $ = (id) => document.getElementById(id);
+    const today = new Date(); $('date').value = new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+    let lineIdentity = null;
+    function showToast(text){const box=$('toast');box.textContent=text;box.classList.add('show');box.scrollIntoView({behavior:'smooth',block:'nearest'});}
+    function parseMessage(){
+      const text=$('message').value;
+      const phoneRe=/(?:\+?886[-\s]?)?09\d{2}[-\s]?\d{3}[-\s]?\d{3}|0\d[-\s]?\d{7,8}/;
+      const phone=text.match(phoneRe);
+      if(phone && !$('phone').value) $('phone').value=phone[0].trim();
+      const fieldValue=(labels)=>{
+        const re=new RegExp('(?:^|\\s)(?:'+labels+')\\s*(?:[：:]|是)\\s*([\\s\\S]*?)(?=(?:[ \\t\\u3000]+(?:客戶姓名|姓名|聯絡人?|稱呼|手機|電話|地址|地點|機型|型號|備註)\\s*(?:[：:]|是))|[\\r\\n]|$)','i');
+        return text.match(re)?.[1]?.trim()||'';
+      };
+      const addressField=fieldValue('服務地址|施工地址|地址|地點');
+      const lines=text.split(/\r?\n/);
+      let addressMatch=null;
+      if(!addressField){
+        const area=/(?:台北市|臺北市|新北市|桃園市|台中市|臺中市|台南市|臺南市|高雄市|基隆市|新竹市|嘉義市|新竹縣|苗栗縣|彰化縣|南投縣|雲林縣|嘉義縣|屏東縣|宜蘭縣|花蓮縣|台東縣|臺東縣|澎湖縣|金門縣|連江縣)[\u4e00-\u9fff]{2,5}(?:區|鄉|鎮)|(?:^|[\s，,])([\u4e00-\u9fff]{2,5}(?:區|鄉|鎮|市))/;
+        for(const line of lines){
+          const m=area.exec(line);
+          const offset=m?(m[0].search(/[^\s，,]/)):0;
+          if(m && /(?:路|街|大道|巷|弄|號)/.test(line.slice(m.index+offset))){addressMatch={line,start:m.index+offset};break;}
+        }
+      }
+      const address=addressField || (addressMatch?addressMatch.line.slice(addressMatch.start).trim():'');
+      let name=fieldValue('客戶姓名|姓名|聯絡人?|稱呼|客戶');
+      const nameFromToken=(value,allowBare=false)=>{
+        const clean=(value||'').trim().replace(/[。.!！?？,，;；：:]+$/,'');
+        const token=clean.split(/[\s,，;；：:]+/).filter(Boolean).pop()||'';
+        if(/^(?:電話|手機|聯絡|姓名|地址|機型|型號|備註|客戶)$/.test(token)) return '';
+        if(/^[\u4e00-\u9fff]{1,4}(?:先生|小姐|女士)$/.test(token)) return token;
+        return allowBare&&/^[\u4e00-\u9fff]{2,4}$/.test(clean)?clean:'';
+      };
+      if(!name && phone){
+        const before=text.slice(0,phone.index), after=text.slice(phone.index+phone[0].length);
+        const sameLineBefore=(before.split(/\r?\n/).pop()||'').trim();
+        const sameLineAfter=(after.split(/\r?\n/)[0]||'').trim();
+        const previousLine=before.split(/\r?\n/).slice(0,-1).reverse().map(s=>s.trim()).find(Boolean)||'';
+        const nextLine=after.split(/\r?\n/).map(s=>s.trim()).find(Boolean)||'';
+        name=nameFromToken(sameLineAfter,true)||nameFromToken(sameLineBefore,true)||nameFromToken(previousLine,true)||nameFromToken(nextLine,true);
+      }
+      if(!name && addressMatch){
+        const linePrefix=addressMatch.line.slice(0,addressMatch.start);
+        name=nameFromToken(linePrefix,true);
+      }
+      if(name && !$('customerName').value) $('customerName').value=name.trim();
+      if(address && !$('address').value) $('address').value=address.trim();
+    }
+    $('message').addEventListener('paste',()=>setTimeout(parseMessage,0)); $('message').addEventListener('input',parseMessage);
+    async function initLine(){
+      if(!APP_CONFIG.LIFF_ID || APP_CONFIG.LIFF_ID==='YOUR_LIFF_ID'){$('lineText').textContent='LINE 身分尚未連線（畫面預覽）';$('lineStatus').style.background='#fff7e8';$('lineStatus').style.color='#805a18';return;}
+      try{await liff.init({liffId:APP_CONFIG.LIFF_ID});if(!liff.isLoggedIn()){liff.login();return;}const profile=await liff.getProfile();lineIdentity={userId:profile.userId,displayName:profile.displayName};$('lineText').textContent='已由 LINE 辨識：'+profile.displayName;}
+      catch(e){$('lineText').textContent='LINE 身分確認失敗，請從官方帳號重新開啟';$('lineStatus').style.background='#fff0ef';$('lineStatus').style.color='#9c3a32';}
+    }
+    $('repairForm').addEventListener('submit',async e=>{
+      e.preventDefault();parseMessage();if(!e.currentTarget.reportValidity())return;
+      if(!lineIdentity){showToast('目前是表單畫面原型，尚未設定 LIFF。正式送出前需完成 LINE 登入設定。');return;}
+      if(!APP_CONFIG.API_URL||APP_CONFIG.API_URL==='YOUR_SECURE_API_ENDPOINT'){showToast('已辨識 LINE 身分；尚未設定接收報修的後端 API，因此資料沒有送出。');return;}
+      const payload={...Object.fromEntries(new FormData(e.currentTarget).entries()),lineIdToken:liff.getIDToken()};
+      try{const res=await fetch(APP_CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!res.ok)throw new Error('submit failed');showToast('報修已送出。案件編號：'+((await res.json()).caseId||'系統已建立'));e.currentTarget.reset();}
+      catch(err){showToast('送出失敗，請稍後再試或聯絡管理人員。');}
+    });
+    const sdk=document.createElement('script');sdk.src='https://static.line-scdn.net/liff/edge/2/sdk.js';sdk.onload=initLine;document.head.appendChild(sdk);
+  </script>
+</body>
+</html>
