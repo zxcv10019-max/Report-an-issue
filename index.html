@@ -41,10 +41,10 @@
   </main>
   <script>
     // 上線前由管理者填入 LIFF ID 與後端 API 網址。不要將 Channel secret 寫在前端。
-    const APP_CONFIG = { LIFF_ID: "2012577898-2O2ygteh", API_URL: "YOUR_SECURE_API_ENDPOINT" };
+    const APP_CONFIG = { LIFF_ID: "2012577898-2O2ygteh", API_URL: "https://asia-east1-dispatching-386da.cloudfunctions.net/createSalesRepair" };
     const $ = (id) => document.getElementById(id);
     const today = new Date(); $('date').value = new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
-    let lineIdentity = null;
+    let lineIdentity = null, submissionId = null;
     function showToast(text){const box=$('toast');box.textContent=text;box.classList.add('show');box.scrollIntoView({behavior:'smooth',block:'nearest'});}
     function parseMessage(){
       const text=$('message').value;
@@ -94,14 +94,15 @@
     async function initLine(){
       if(!APP_CONFIG.LIFF_ID || APP_CONFIG.LIFF_ID==='YOUR_LIFF_ID'){$('lineText').textContent='LINE 身分尚未連線（畫面預覽）';$('lineStatus').style.background='#fff7e8';$('lineStatus').style.color='#805a18';return;}
       try{await liff.init({liffId:APP_CONFIG.LIFF_ID});if(!liff.isLoggedIn()){liff.login();return;}const profile=await liff.getProfile();lineIdentity={userId:profile.userId,displayName:profile.displayName};$('lineText').textContent='已由 LINE 辨識：'+profile.displayName;}
-      catch(e){$('lineText').textContent='LINE 身分確認失敗，請從官方帳號重新開啟';$('lineStatus').style.background='#fff0ef';$('lineStatus').style.color='#9c3a32';}
+      catch(e){console.error('LIFF initialization/profile error',e);$('lineText').textContent=e?.code==='FORBIDDEN'?'LINE 權限不足，請在 LIFF 設定開啟 profile 後重新授權':'LINE 身分確認失敗（'+(e?.code||'請確認 LIFF 設定')+'）';$('lineStatus').style.background='#fff0ef';$('lineStatus').style.color='#9c3a32';}
     }
     $('repairForm').addEventListener('submit',async e=>{
       e.preventDefault();parseMessage();if(!e.currentTarget.reportValidity())return;
       if(!lineIdentity){showToast('目前是表單畫面原型，尚未設定 LIFF。正式送出前需完成 LINE 登入設定。');return;}
       if(!APP_CONFIG.API_URL||APP_CONFIG.API_URL==='YOUR_SECURE_API_ENDPOINT'){showToast('已辨識 LINE 身分；尚未設定接收報修的後端 API，因此資料沒有送出。');return;}
-      const payload={...Object.fromEntries(new FormData(e.currentTarget).entries()),lineIdToken:liff.getIDToken()};
-      try{const res=await fetch(APP_CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!res.ok)throw new Error('submit failed');showToast('報修已送出。案件編號：'+((await res.json()).caseId||'系統已建立'));e.currentTarget.reset();}
+      if(!submissionId)submissionId=crypto.randomUUID();
+      const payload={...Object.fromEntries(new FormData(e.currentTarget).entries()),submissionId,lineIdToken:liff.getIDToken()};
+      try{const res=await fetch(APP_CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const result=await res.json().catch(()=>({}));if(!res.ok)throw new Error(result.error||'submit_failed');showToast('報修已同步至派工系統。案件編號：'+(result.caseId||'系統已建立'));e.currentTarget.reset();submissionId=null;}
       catch(err){showToast('送出失敗，請稍後再試或聯絡管理人員。');}
     });
     const sdk=document.createElement('script');sdk.src='https://static.line-scdn.net/liff/edge/2/sdk.js';sdk.onload=initLine;document.head.appendChild(sdk);
