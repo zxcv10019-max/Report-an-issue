@@ -41,7 +41,7 @@
   </main>
   <script>
     // 上線前由管理者填入 LIFF ID 與後端 API 網址。不要將 Channel secret 寫在前端。
-    const APP_CONFIG = { LIFF_ID: "2012577898-2O2ygteh", API_URL: "https://asia-east1-dispatching-386da.cloudfunctions.net/createSalesRepair" };
+    const APP_CONFIG = { LIFF_ID: "2012577898-202ygteh", API_URL: "https://line-repair-sync.zxcv10019.workers.dev" };
     const $ = (id) => document.getElementById(id);
     const today = new Date(); $('date').value = new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
     let lineIdentity = null, submissionId = null;
@@ -99,7 +99,7 @@
     $('repairForm').addEventListener('submit',async e=>{
       e.preventDefault();parseMessage();if(!e.currentTarget.reportValidity())return;
       if(!lineIdentity){showToast('目前是表單畫面原型，尚未設定 LIFF。正式送出前需完成 LINE 登入設定。');return;}
-      if(!APP_CONFIG.API_URL||APP_CONFIG.API_URL==='YOUR_SECURE_API_ENDPOINT'){showToast('已辨識 LINE 身分；尚未設定接收報修的後端 API，因此資料沒有送出。');return;}
+      if(!APP_CONFIG.API_URL||APP_CONFIG.API_URL==='YOUR_CLOUDFLARE_WORKER_URL'){showToast('已辨識 LINE 身分；尚未設定接收報修的後端 API，因此資料沒有送出。');return;}
       if(!submissionId)submissionId=crypto.randomUUID();
       const payload={...Object.fromEntries(new FormData(e.currentTarget).entries()),submissionId,lineIdToken:liff.getIDToken()};
       try{const res=await fetch(APP_CONFIG.API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const result=await res.json().catch(()=>({}));if(!res.ok)throw new Error(result.error||'submit_failed');showToast('報修已同步至派工系統。案件編號：'+(result.caseId||'系統已建立'));e.currentTarget.reset();submissionId=null;}
